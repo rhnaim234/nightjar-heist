@@ -7,25 +7,33 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
-function ensureReadableTree(dirPath: string): void {
+function ensureReadableTree(dirPath) {
   if (!existsSync(dirPath)) return;
-  chmodSync(dirPath, 0o755);
+  try {
+    chmodSync(dirPath, 0o755);
+  } catch {
+    // Ignore if filesystem or ownership disallows chmod
+  }
   for (const entry of readdirSync(dirPath)) {
     const fullPath = join(dirPath, entry);
     const stats = statSync(fullPath);
     if (stats.isDirectory()) {
       ensureReadableTree(fullPath);
     } else {
-      chmodSync(fullPath, 0o644);
+      try {
+        chmodSync(fullPath, 0o644);
+      } catch {
+        // Ignore if filesystem or ownership disallows chmod
+      }
     }
   }
 }
 
+process.umask(0o022);
 const here = fileURLToPath(new URL('.', import.meta.url));
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 mkdirSync(outDir, { recursive: true });
-chmodSync(outDir, 0o755);
 
 const gameDest = join(outDir, 'game');
 cpSync(join(here, 'game'), gameDest, { recursive: true });
@@ -49,4 +57,8 @@ writeFileSync(
     game_path_max_bytes: 1000,
   }),
 );
-chmodSync(dossierPath, 0o644);
+try {
+  chmodSync(dossierPath, 0o644);
+} catch {
+  // Ignore if filesystem or ownership disallows chmod
+}
