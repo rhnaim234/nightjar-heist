@@ -1,0 +1,6 @@
+[
+  { "name": "1-cover-heist.jpg", "query": "?shot=cover&wing=1&seed=1" },
+  { "name": "2-routes-tools.jpg", "query": "?shot=tools&wing=1&seed=2" },
+  { "name": "3-caught-fair.jpg", "query": "?shot=caught&wing=1&seed=3" },
+  { "name": "4-getaway-score.jpg", "query": "?shot=getaway&wing=1&seed=4" }
+]
